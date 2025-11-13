@@ -246,7 +246,7 @@ type SubItem = {
   new?: boolean;
 };
 
-const menuGroups = [
+const menuGroups: MenuGroup[] = [
   {
     title: "Menu",
     items: [
@@ -328,10 +328,34 @@ const menuGroups = [
   },
 ];
 
-const isActive = (path) => route.path === path;
+interface MenuSubItem {
+  name: string;
+  path: string;
+  pro?: boolean;
+  new?: boolean;
+}
 
-const toggleSubmenu = (groupIndex, itemIndex) => {
-  const key = `${groupIndex}-${itemIndex}`;
+type VueIcon = any; // Vue component type - kept as any to avoid extra imports here
+
+interface MenuItem {
+  icon?: VueIcon;
+  name: string;
+  path?: string;
+  subItems?: MenuSubItem[];
+}
+
+interface MenuGroup {
+  title: string;
+  items: MenuItem[];
+}
+
+const isActive = (path?: string): boolean => {
+  if (!path) return false;
+  return route.path === path;
+};
+
+const toggleSubmenu = (groupIndex: number, itemIndex: number): void => {
+  const key: string = `${groupIndex}-${itemIndex}`;
   openSubmenu.value = openSubmenu.value === key ? null : key;
 };
 
@@ -344,26 +368,28 @@ const isAnySubmenuRouteActive = computed(() => {
   );
 });
 
-const isSubmenuOpen = (groupIndex, itemIndex) => {
+const isSubmenuOpen = (groupIndex: number, itemIndex: number): boolean => {
   const key = `${groupIndex}-${itemIndex}`;
   return (
     openSubmenu.value === key ||
     (isAnySubmenuRouteActive.value &&
-      menuGroups[groupIndex].items[itemIndex].subItems?.some((subItem) =>
+      (menuGroups[groupIndex].items[itemIndex].subItems?.some((subItem) =>
         isActive(subItem.path)
-      ))
+      ) ?? false))
   );
 };
 
-const startTransition = (el) => {
-  el.style.height = "auto";
-  const height = el.scrollHeight;
-  el.style.height = "0px";
-  el.offsetHeight; // force reflow
-  el.style.height = height + "px";
+const startTransition = (el: Element) => {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.height = "auto";
+  const height = htmlEl.scrollHeight;
+  htmlEl.style.height = "0px";
+  htmlEl.offsetHeight; // force reflow
+  htmlEl.style.height = height + "px";
 };
 
-const endTransition = (el) => {
-  el.style.height = "";
+const endTransition = (el: Element) => {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.height = "";
 };
 </script>

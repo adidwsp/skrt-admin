@@ -269,6 +269,11 @@ const password = ref('')
 const agreeToTerms = ref(false)
 const showPassword = ref(false)
 
+// Toggle password visibility for the password input
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
+}
+
 const handleSubmit = async () => {
   errorMessage.value = null
   successMessage.value = null
@@ -310,21 +315,22 @@ const handleSubmit = async () => {
     console.log('userId:', userId, 'session:', session)
 
     // 2) Try to insert profile only if we have userId
-    if (userId) {
-      const { data: upsertData, error: upsertError } = await supabase
-        .from('profiles')
-        .upsert([{
-          id: userId,
-          first_name: firstName.value,
-          last_name: lastName.value,
-          email: email.value,
-        }], { returning: 'representation' }) // returning optional
-
-      console.log('upsertData:', upsertData)
-      console.log('upsertError:', upsertError)
-
-      if (upsertError) throw upsertError
-    }
+        if (userId) {
+          const { data: upsertData, error: upsertError } = await supabase
+            .from('profiles')
+            .upsert([{
+              id: userId,
+              first_name: firstName.value,
+              last_name: lastName.value,
+              email: email.value,
+            }])
+            .select() // request returned rows (replace unsupported `returning` option)
+    
+          console.log('upsertData:', upsertData)
+          console.log('upsertError:', upsertError)
+    
+          if (upsertError) throw upsertError
+        }
 
     successMessage.value = 'Pendaftaran berhasil. Cek email jika perlu verifikasi.'
     router.push('/signin')
