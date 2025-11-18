@@ -13,10 +13,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Ecommerce',
+      name: 'Dashboard',
       component: () => import('../views/Ecommerce.vue'),
       meta: {
-        title: 'eCommerce Dashboard',
+        title: 'Admin Dashboard',
+        requiresAuth: true,
       },
     },
     {
@@ -58,6 +59,7 @@ const router = createRouter({
       component: () => import('../views/Tables/ParticipantDatas.vue'),
       meta: {
         title: 'Basic Tables',
+        requiresAuth: true,
       },
     },
     {

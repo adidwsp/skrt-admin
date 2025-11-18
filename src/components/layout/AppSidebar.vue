@@ -253,7 +253,7 @@ const menuGroups: MenuGroup[] = [
       {
         icon: GridIcon,
         name: "Dashboard",
-        subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+        subItems: [{ name: "Dashboard Event", path: "/", pro: false }],
       },
       // {
       //   icon: CalenderIcon,
@@ -266,18 +266,18 @@ const menuGroups: MenuGroup[] = [
       //   path: "/profile",
       // },
 
+      // {
+      //   name: "Forms",
+      //   icon: ListIcon,
+      //   subItems: [
+      //     { name: "Form Elements", path: "/form-elements", pro: false },
+      //   ] as SubItem[],
+      // },
       {
-        name: "Forms",
-        icon: ListIcon,
-        subItems: [
-          { name: "Form Elements", path: "/form-elements", pro: false },
-        ] as SubItem[],
-      },
-      {
-        name: "Tables",
+        name: "Data",
         icon: TableIcon,
         subItems: [
-          { name: "Basic Tables", path: "/basic-tables", pro: false },
+          // { name: "Basic Tables", path: "/basic-tables", pro: false },
           { name: "Data Peserta", path: "/participant-datas", pro: false },
           { name: "Daftar Event", path: "/event-list", pro: false }
         ] as SubItem[],
@@ -292,40 +292,40 @@ const menuGroups: MenuGroup[] = [
       // },
     ],
   },
-  {
-    title: "Others",
-    items: [
-      {
-        icon: PieChartIcon,
-        name: "Charts",
-        subItems: [
-          { name: "Line Chart", path: "/line-chart", pro: false },
-          { name: "Bar Chart", path: "/bar-chart", pro: false },
-        ] as SubItem[],
-      },
-      {
-        icon: BoxCubeIcon,
-        name: "Ui Elements",
-        subItems: [
-          { name: "Alerts", path: "/alerts", pro: false },
-          { name: "Avatars", path: "/avatars", pro: false },
-          { name: "Badge", path: "/badge", pro: false },
-          { name: "Buttons", path: "/buttons", pro: false },
-          { name: "Images", path: "/images", pro: false },
-          { name: "Videos", path: "/videos", pro: false },
-        ] as SubItem[],
-      },
-      {
-        icon: PlugInIcon,
-        name: "Authentication",
-        subItems: [
-          { name: "Signin", path: "/signin", pro: false },
-          { name: "Signup", path: "/signup", pro: false },
-        ] as SubItem[],
-      },
-      // ... Add other menu items here
-    ],
-  },
+  // {
+  //   title: "Others",
+  //   items: [
+  //     {
+  //       icon: PieChartIcon,
+  //       name: "Charts",
+  //       subItems: [
+  //         { name: "Line Chart", path: "/line-chart", pro: false },
+  //         { name: "Bar Chart", path: "/bar-chart", pro: false },
+  //       ] as SubItem[],
+  //     },
+  //     {
+  //       icon: BoxCubeIcon,
+  //       name: "Ui Elements",
+  //       subItems: [
+  //         { name: "Alerts", path: "/alerts", pro: false },
+  //         { name: "Avatars", path: "/avatars", pro: false },
+  //         { name: "Badge", path: "/badge", pro: false },
+  //         { name: "Buttons", path: "/buttons", pro: false },
+  //         { name: "Images", path: "/images", pro: false },
+  //         { name: "Videos", path: "/videos", pro: false },
+  //       ] as SubItem[],
+  //     },
+  //     {
+  //       icon: PlugInIcon,
+  //       name: "Authentication",
+  //       subItems: [
+  //         { name: "Signin", path: "/signin", pro: false },
+  //         { name: "Signup", path: "/signup", pro: false },
+  //       ] as SubItem[],
+  //     },
+  //     // ... Add other menu items here
+  //   ],
+  // },
 ];
 
 interface MenuSubItem {

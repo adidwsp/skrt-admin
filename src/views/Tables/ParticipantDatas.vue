@@ -2,9 +2,7 @@
   <AdminLayout>
     <PageBreadcrumb :pageTitle="currentPageTitle" />
     <div class="space-y-5 sm:space-y-6">
-      <ComponentCard title="Peserta Acara">
         <ParticipantDatas />
-      </ComponentCard>
     </div>
   </AdminLayout>
 </template>

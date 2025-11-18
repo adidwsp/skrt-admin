@@ -5,152 +5,279 @@
     <div
       class="px-5 pt-5 bg-white shadow-default rounded-2xl pb-11 dark:bg-gray-900 sm:px-6 sm:pt-6"
     >
-      <div class="flex justify-between">
+      <div class="flex justify-between items-start mb-6">
         <div>
-          <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Monthly Target</h3>
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Monthly Targets</h3>
           <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Target you’ve set for each month
+            Progress toward monthly goals
           </p>
         </div>
-        <div>
-          <DropdownMenu :menu-items="menuItems">
-            <template #icon>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-                  fill="currentColor"
-                />
+        
+        <!-- Filter Section -->
+        <div class="flex gap-3">
+          <!-- Month Filter -->
+          <div class="relative">
+            <select
+              v-model="selectedMonth"
+              @change="fetchTargetData"
+              class="pl-3 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white appearance-none cursor-pointer text-sm"
+            >
+              <option v-for="month in months" :key="month.value" :value="month.value">
+                {{ month.label }}
+              </option>
+            </select>
+            <div class="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
-            </template>
-          </DropdownMenu>
-        </div>
-      </div>
-      <div class="relative max-h-[195px]">
-        <div id="chartTwo" class="h-full">
-          <div class="radial-bar-chart">
-            <VueApexCharts type="radialBar" height="330" :options="chartOptions" :series="series" />
+            </div>
+          </div>
+
+          <!-- Year Filter -->
+          <div class="relative">
+            <select
+              v-model="selectedYear"
+              @change="fetchTargetData"
+              class="pl-3 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white appearance-none cursor-pointer text-sm"
+            >
+              <option v-for="year in years" :key="year" :value="year">
+                {{ year }}
+              </option>
+            </select>
+            <div class="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </div>
           </div>
         </div>
-        <span
-          class="absolute left-1/2 top-[85%] -translate-x-1/2 -translate-y-[85%] rounded-full bg-success-50 px-3 py-1 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500"
-          >+10%</span
-        >
       </div>
-      <p class="mx-auto mt-1.5 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
-        You earn $3287 today, it's higher than last month. Keep up your good work!
-      </p>
+
+      <!-- Dual Radial Charts -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Target Peserta -->
+        <div class="text-center">
+          <div class="relative max-h-[195px] mb-4">
+            <div class="radial-bar-chart">
+              <VueApexCharts 
+                type="radialBar" 
+                height="200" 
+                :options="participantChartOptions" 
+                :series="participantSeries" 
+              />
+            </div>
+          </div>
+          <h4 class="font-semibold text-gray-800 dark:text-white/90 mb-2">Participant Target</h4>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            {{ participantProgress.current }}/100 participants
+          </p>
+          <div class="flex justify-center gap-4 text-xs">
+            <div class="text-center">
+              <div class="w-3 h-3 bg-blue-500 rounded-full mx-auto mb-1"></div>
+              <span class="text-gray-600 dark:text-gray-400">
+                Male: {{ participantProgress.male }}/50
+              </span>
+            </div>
+            <div class="text-center">
+              <div class="w-3 h-3 bg-pink-500 rounded-full mx-auto mb-1"></div>
+              <span class="text-gray-600 dark:text-gray-400">
+                Female: {{ participantProgress.female }}/50
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Donasi -->
+        <div class="text-center">
+          <div class="relative max-h-[195px] mb-4">
+            <div class="radial-bar-chart">
+              <VueApexCharts 
+                type="radialBar" 
+                height="200" 
+                :options="donationChartOptions" 
+                :series="donationSeries" 
+              />
+            </div>
+          </div>
+          <h4 class="font-semibold text-gray-800 dark:text-white/90 mb-2">Donation Target</h4>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Rp {{ formatCurrency(donationProgress.current) }}/6,000,000
+          </p>
+          <div class="mt-3">
+            <span 
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+              :class="donationProgress.percentage >= 100 
+                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                : donationProgress.percentage >= 50
+                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+              "
+            >
+              {{ donationProgress.percentage }}% achieved
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
-      <div>
+    <!-- Summary Stats -->
+    <div class="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5 bg-gray-50 dark:bg-gray-800/50 rounded-b-2xl">
+      <div class="text-center">
         <p class="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-          Target
+          Total Participants
         </p>
-        <p
-          class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg"
-        >
-          $20K
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M7.26816 13.6632C7.4056 13.8192 7.60686 13.9176 7.8311 13.9176C7.83148 13.9176 7.83187 13.9176 7.83226 13.9176C8.02445 13.9178 8.21671 13.8447 8.36339 13.6981L12.3635 9.70076C12.6565 9.40797 12.6567 8.9331 12.3639 8.6401C12.0711 8.34711 11.5962 8.34694 11.3032 8.63973L8.5811 11.36L8.5811 2.5C8.5811 2.08579 8.24531 1.75 7.8311 1.75C7.41688 1.75 7.0811 2.08579 7.0811 2.5L7.0811 11.3556L4.36354 8.63975C4.07055 8.34695 3.59568 8.3471 3.30288 8.64009C3.01008 8.93307 3.01023 9.40794 3.30321 9.70075L7.26816 13.6632Z"
-              fill="#D92D20"
-            />
-          </svg>
+        <p class="text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
+          {{ participantProgress.current }}
         </p>
       </div>
 
-      <div class="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
+      <div class="w-px bg-gray-200 h-7 dark:bg-gray-700"></div>
 
-      <div>
+      <div class="text-center">
         <p class="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-          Revenue
+          Male/Female
         </p>
-        <p
-          class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg"
-        >
-          $20K
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-              fill="#039855"
-            />
-          </svg>
+        <p class="text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
+          {{ participantProgress.male }}/{{ participantProgress.female }}
         </p>
       </div>
 
-      <div class="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
+      <div class="w-px bg-gray-200 h-7 dark:bg-gray-700"></div>
 
-      <div>
+      <div class="text-center">
         <p class="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-          Today
+          Total Donation
         </p>
-        <p
-          class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg"
-        >
-          $20K
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-              fill="#039855"
-            />
-          </svg>
+        <p class="text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
+          Rp {{ formatCurrency(donationProgress.current) }}
         </p>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, computed } from 'vue'
-import DropdownMenu from '../common/DropdownMenu.vue'
-const menuItems = [
-  { label: 'View More', onClick: () => console.log('View More clicked') },
-  { label: 'Delete', onClick: () => console.log('Delete clicked') },
-]
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { supabase } from '@/utils/supabase'
 import VueApexCharts from 'vue3-apexcharts'
 
-const props = defineProps({
-  value: {
-    type: Number,
-    default: 75.55,
-  },
+const loading = ref(false)
+
+// Filter options
+const currentDate = new Date()
+const selectedMonth = ref(currentDate.getMonth() + 1)
+const selectedYear = ref(currentDate.getFullYear())
+
+const months = [
+  { value: 1, label: 'January' },
+  { value: 2, label: 'February' },
+  { value: 3, label: 'March' },
+  { value: 4, label: 'April' },
+  { value: 5, label: 'May' },
+  { value: 6, label: 'June' },
+  { value: 7, label: 'July' },
+  { value: 8, label: 'August' },
+  { value: 9, label: 'September' },
+  { value: 10, label: 'October' },
+  { value: 11, label: 'November' },
+  { value: 12, label: 'December' }
+]
+
+const years = Array.from({ length: 5 }, (_, i) => currentDate.getFullYear() - 2 + i)
+
+// Data state
+const participantData = ref({
+  total: 0,
+  male: 0,
+  female: 0
 })
 
-const series = computed(() => [props.value])
+const donationData = ref(0)
 
-const chartOptions = {
+// Computed progress
+const participantProgress = computed(() => {
+  const total = participantData.value.total
+  const male = participantData.value.male
+  const female = participantData.value.female
+  const percentage = Math.min(Math.round((total / 100) * 100), 100)
+  
+  return {
+    current: total,
+    male,
+    female,
+    percentage
+  }
+})
+
+const donationProgress = computed(() => {
+  const current = donationData.value
+  const percentage = Math.min(Math.round((current / 6000000) * 100), 100)
+  
+  return {
+    current,
+    percentage
+  }
+})
+
+// Chart series
+const participantSeries = computed(() => [participantProgress.value.percentage])
+const donationSeries = computed(() => [donationProgress.value.percentage])
+
+// Format currency
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('id-ID').format(amount)
+}
+
+// Fetch target data
+const fetchTargetData = async () => {
+  try {
+    loading.value = true
+    
+    const startDate = new Date(selectedYear.value, selectedMonth.value - 1, 1)
+    const endDate = new Date(selectedYear.value, selectedMonth.value, 0)
+
+    // Fetch participant data
+    const { data: participantDataResponse, error: participantError } = await supabase
+      .from('tickets')
+      .select('gender')
+      .gte('created_at', startDate.toISOString())
+      .lte('created_at', endDate.toISOString())
+
+    if (participantError) throw participantError
+
+    // Calculate participant stats
+    const totalParticipants = participantDataResponse?.length || 0
+    const maleCount = participantDataResponse?.filter(t => t.gender?.toLowerCase() === 'laki-laki').length || 0
+    const femaleCount = participantDataResponse?.filter(t => t.gender?.toLowerCase() === 'perempuan').length || 0
+
+    participantData.value = {
+      total: totalParticipants,
+      male: maleCount,
+      female: femaleCount
+    }
+
+    // Fetch donation data
+    const { data: donationDataResponse, error: donationError } = await supabase
+      .from('tickets')
+      .select('donation_amount')
+      .gte('created_at', startDate.toISOString())
+      .lte('created_at', endDate.toISOString())
+      .not('donation_amount', 'is', null)
+
+    if (donationError) throw donationError
+
+    const totalDonation = donationDataResponse?.reduce((sum, ticket) => sum + (ticket.donation_amount || 0), 0) || 0
+    donationData.value = totalDonation
+
+  } catch (error) {
+    console.error('Error fetching target data:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Chart options
+const participantChartOptions = {
   colors: ['#465FFF'],
   chart: {
     fontFamily: 'Outfit, sans-serif',
@@ -163,7 +290,7 @@ const chartOptions = {
       startAngle: -90,
       endAngle: 90,
       hollow: {
-        size: '80%',
+        size: '70%',
       },
       track: {
         background: '#E4E7EC',
@@ -175,12 +302,12 @@ const chartOptions = {
           show: false,
         },
         value: {
-          fontSize: '36px',
+          fontSize: '24px',
           fontWeight: '600',
-          offsetY: 60,
+          offsetY: 40,
           color: '#1D2939',
-          formatter: function (val: number) {
-            return val.toFixed(2) + '%'
+          formatter: function (val) {
+            return val.toFixed(0) + '%'
           },
         },
       },
@@ -193,14 +320,69 @@ const chartOptions = {
   stroke: {
     lineCap: 'round',
   },
-  labels: ['Progress'],
+  labels: ['Participants'],
 }
+
+const donationChartOptions = {
+  colors: ['#10B981'],
+  chart: {
+    fontFamily: 'Outfit, sans-serif',
+    sparkline: {
+      enabled: true,
+    },
+  },
+  plotOptions: {
+    radialBar: {
+      startAngle: -90,
+      endAngle: 90,
+      hollow: {
+        size: '70%',
+      },
+      track: {
+        background: '#E4E7EC',
+        strokeWidth: '100%',
+        margin: 5,
+      },
+      dataLabels: {
+        name: {
+          show: false,
+        },
+        value: {
+          fontSize: '24px',
+          fontWeight: '600',
+          offsetY: 40,
+          color: '#1D2939',
+          formatter: function (val) {
+            return val.toFixed(0) + '%'
+          },
+        },
+      },
+    },
+  },
+  fill: {
+    type: 'solid',
+    colors: ['#10B981'],
+  },
+  stroke: {
+    lineCap: 'round',
+  },
+  labels: ['Donation'],
+}
+
+onMounted(() => {
+  fetchTargetData()
+})
+
+// Expose refresh function
+defineExpose({
+  refreshData: fetchTargetData
+})
 </script>
 
 <style scoped>
 .radial-bar-chart {
   width: 100%;
-  max-width: 330px;
+  max-width: 200px;
   margin: 0 auto;
 }
 </style>
