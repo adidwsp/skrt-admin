@@ -25,6 +25,7 @@
                 type="text"
                 placeholder="Search tickets..."
                 class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 w-full sm:w-64"
+                @input="resetPagination"
               >
               <div class="absolute left-3 top-2.5">
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,8 +45,6 @@
           </div>
         </div>
       </div>
-
-      
 
       <!-- Table Container dengan Header Sticky yang Fixed -->
       <div class="relative max-w-full overflow-x-auto custom-scrollbar" style="max-height: calc(100vh - 280px);">
@@ -83,14 +82,14 @@
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
             <tr 
-              v-for="(ticket, index) in filteredTickets" 
+              v-for="(ticket, index) in paginatedTickets" 
               :key="ticket.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150 cursor-pointer group"
               @click="viewTicketDetail(ticket)"
             >
               <!-- No. Column - Sticky -->
               <td class="left-0 z-30 bg-white dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-700/50 px-4 py-3 text-theme-sm font-medium text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-600">
-                {{ index + 1 }}
+                {{ (currentPage - 1) * itemsPerPage + index + 1 }}
               </td>
 
               <!-- Attendee Column -->
@@ -216,6 +215,98 @@
               Clear search
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div v-if="filteredTickets.length > 0" class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div class="flex items-center space-x-4 mb-4 sm:mb-0">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-700 dark:text-gray-300">Show</span>
+            <select
+              v-model="itemsPerPage"
+              @change="resetPagination"
+              class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span class="text-sm text-gray-700 dark:text-gray-300">entries</span>
+          </div>
+          <div class="text-sm text-gray-700 dark:text-gray-300">
+            Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ filteredTickets.length }} entries
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-1">
+          <!-- First Page -->
+          <button
+            @click="goToPage(1)"
+            :disabled="currentPage === 1"
+            class="p-2 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            title="First Page"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+            </svg>
+          </button>
+
+          <!-- Previous Page -->
+          <button
+            @click="goToPage(currentPage - 1)"
+            :disabled="currentPage === 1"
+            class="p-2 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            title="Previous Page"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+
+          <!-- Page Numbers -->
+          <div class="flex items-center space-x-1">
+            <button
+              v-for="page in visiblePages"
+              :key="page"
+              @click="goToPage(page)"
+              class="min-w-[2.5rem] px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200"
+              :class="page === currentPage 
+                ? 'bg-blue-600 text-white' 
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'"
+            >
+              {{ page }}
+            </button>
+            
+            <!-- Ellipsis for many pages -->
+            <span v-if="showStartEllipsis" class="px-2 text-gray-500">...</span>
+            <span v-if="showEndEllipsis" class="px-2 text-gray-500">...</span>
+          </div>
+
+          <!-- Next Page -->
+          <button
+            @click="goToPage(currentPage + 1)"
+            :disabled="currentPage === totalPages"
+            class="p-2 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            title="Next Page"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+
+          <!-- Last Page -->
+          <button
+            @click="goToPage(totalPages)"
+            :disabled="currentPage === totalPages"
+            class="p-2 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            title="Last Page"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -446,13 +537,13 @@
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Gender
                   </label>
-                  <select
+                  <select 
                     v-model="editForm.gender"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   >
                     <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
                   </select>
                 </div>
               </div>
@@ -576,7 +667,7 @@
 import { onMounted, ref, reactive, computed } from 'vue'
 import { supabase } from '../../../utils/supabase'
 
-interface Ticket {
+interface Tickets {
   id: string
   name: string
   gender: string
@@ -595,14 +686,18 @@ interface Ticket {
   is_scanned: boolean
 }
 
-const tickets = ref<Ticket[]>([])
+const tickets = ref<Tickets[]>([])
 const loading = ref(false)
 const showEditModal = ref(false)
 const showDetailModal = ref(false)
 const showDeleteModal = ref(false)
 const searchQuery = ref('')
 
-const selectedTicket = ref<Ticket | null>(null)
+// Pagination variables
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+
+const selectedTicket = ref<Tickets | null>(null)
 const editForm = reactive({
   id: '',
   name: '',
@@ -615,9 +710,9 @@ const editForm = reactive({
   is_scanned: false
 })
 
-const deleteTicketData = ref<Ticket | null>(null)
+const deleteTicketData = ref<Tickets | null>(null)
 
-// Computed properties
+// Computed properties for pagination
 const filteredTickets = computed(() => {
   if (!searchQuery.value) return tickets.value
   
@@ -631,9 +726,65 @@ const filteredTickets = computed(() => {
   )
 })
 
+const totalPages = computed(() => {
+  return Math.ceil(filteredTickets.value.length / itemsPerPage.value)
+})
+
+const paginatedTickets = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredTickets.value.slice(start, end)
+})
+
+const startIndex = computed(() => {
+  return (currentPage.value - 1) * itemsPerPage.value
+})
+
+const endIndex = computed(() => {
+  const end = startIndex.value + itemsPerPage.value
+  return end > filteredTickets.value.length ? filteredTickets.value.length : end
+})
+
+const visiblePages = computed(() => {
+  const pages = []
+  const maxVisiblePages = 5
+  let startPage = Math.max(1, currentPage.value - Math.floor(maxVisiblePages / 2))
+  let endPage = Math.min(totalPages.value, startPage + maxVisiblePages - 1)
+  
+  // Adjust start page if we're near the end
+  if (endPage - startPage + 1 < maxVisiblePages) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1)
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i)
+  }
+  
+  return pages
+})
+
+const showStartEllipsis = computed(() => {
+  return visiblePages.value[0] > 1
+})
+
+const showEndEllipsis = computed(() => {
+  return visiblePages.value[visiblePages.value.length - 1] < totalPages.value
+})
+
 const totalDonation = computed(() => {
   return filteredTickets.value.reduce((sum, ticket) => sum + (ticket.donation_amount || 0), 0)
 })
+
+// Pagination methods
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+  }
+}
+
+const resetPagination = () => {
+  currentPage.value = 1
+}
 
 // Fungsi untuk menentukan kelas status - PERBAIKAN: parameter wajib boolean
 const statusClasses = (isScanned: boolean) => {
@@ -672,14 +823,14 @@ const formatDateTime = (dateString: string) => {
 }
 
 // View ticket detail
-const viewTicketDetail = (ticket: Ticket) => {
+const viewTicketDetail = (ticket: Tickets) => {
   selectedTicket.value = ticket
   showDetailModal.value = true
 }
 
 // Edit Ticket
-const editTicket = (ticket: Ticket) => {
-  editForm.id = ticket.id
+const editTicket = (ticket: Tickets) => {
+  editForm.id = ticket.id || ''
   editForm.name = ticket.name || ''
   editForm.gender = ticket.gender || ''
   editForm.university = ticket.university || ''
@@ -697,9 +848,7 @@ const updateTicket = async () => {
 
   loading.value = true
   try {
-    const { error } = await supabase
-      .from('tickets')
-      .update({
+    const payload: any = {
         name: editForm.name,
         gender: editForm.gender,
         university: editForm.university,
@@ -709,7 +858,11 @@ const updateTicket = async () => {
         donation_amount: editForm.donation_amount,
         is_scanned: editForm.is_scanned,
         updated_at: new Date().toISOString()
-      })
+    }
+
+    const { error } = await supabase
+      .from('tickets')
+      .update(payload)
       .eq('id', editForm.id)
 
     if (error) throw error
@@ -730,7 +883,7 @@ const updateTicket = async () => {
 }
 
 // Confirm Delete
-const confirmDelete = (ticket: Ticket) => {
+const confirmDelete = (ticket: Tickets) => {
   deleteTicketData.value = ticket
   showDeleteModal.value = true
 }
@@ -764,6 +917,7 @@ const deleteTicket = async () => {
 // Refresh tickets
 const refreshTickets = async () => {
   await getTickets()
+  resetPagination()
 }
 
 // Get Tickets

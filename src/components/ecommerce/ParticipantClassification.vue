@@ -112,8 +112,8 @@
       </div>
     </div>
 
-    <!-- Summary Stats -->
-    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <!-- Summary Stats
+    <div class="mt-6 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
       <div class="text-center">
         <p class="text-2xl font-bold text-gray-800 dark:text-white/90">{{ totalParticipants }}</p>
         <p class="text-sm text-gray-600 dark:text-gray-400">Total Participants</p>
@@ -125,8 +125,8 @@
       <div class="text-center">
         <p class="text-2xl font-bold text-gray-800 dark:text-white/90">{{ totalChildren }}</p>
         <p class="text-sm text-gray-600 dark:text-gray-400">Children</p>
-      </div>
-    </div>
+      </div> -->
+    <!-- </div> -->
   </div>
 </template>
 
@@ -345,12 +345,12 @@ const baseChartOptions = {
       return w.config.series[seriesIndex]
     },
     style: {
-      fontSize: '12px',
+      fontSize: '18px',
       fontWeight: 'bold',
       colors: ['#FFFFFF']
     },
     dropShadow: {
-      enabled: true,
+      enabled: false,
       top: 1,
       left: 1,
       blur: 1,
@@ -368,7 +368,7 @@ const baseChartOptions = {
   },
   stroke: {
     width: 2,
-    colors: ['#FFFFFF']
+    colors: ['#ffffff']
   },
   plotOptions: {
     pie: {
