@@ -63,6 +63,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/donation-datas',
+      name: 'Data Infaq',
+      component: () => import('../views/Tables/ParticipantDatas.vue'),
+      meta: {
+        title: 'Basic Tables',
+        requiresAuth: true,
+      },
+    },
+    {
       path: '/event-list',
       name: 'Daftar Event',
       component: () => import('../views/Tables/EventList.vue'),

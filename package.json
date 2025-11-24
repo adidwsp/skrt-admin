@@ -36,7 +36,8 @@
     "vue-toastification": "^2.0.0-rc.5",
     "vue3-apexcharts": "^1.10.0",
     "vuedraggable": "^4.1.0",
-    "vuevectormap": "^2.0.1"
+    "vuevectormap": "^2.0.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
