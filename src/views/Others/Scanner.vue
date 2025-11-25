@@ -36,7 +36,7 @@
         <!-- Camera Preview -->
         <div class="relative bg-black">
           <!-- QR Code Scanner Container -->
-          <div id="qr-reader" class="w-full h-64 relative">
+          <div id="qr-reader" class="w-full h-128 relative">
             <!-- Scanner akan di-render di sini oleh Html5Qrcode -->
           </div>
           
@@ -44,27 +44,27 @@
           <div v-if="cameraActive" class="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div class="relative">
               <!-- Square QR Frame -->
-              <div class="border-2 border-green-400 rounded-lg w-64 h-64 relative">
+              <!-- <div class="border-2 border-green-400 rounded-lg w-64 h-64 relative"> -->
                 <!-- Scanning Animation Line -->
-                <div class="absolute top-0 left-0 right-0 h-1 bg-green-400 animate-pulse scan-line"></div>
+                <div class="absolute top-40 left-0 right-0 h-1 bg-green-400 animate-pulse scan-line"></div>
                 <!-- Corner Borders -->
-                <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-green-400"></div>
-                <div class="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-green-400"></div>
+                <!-- <div class="absolute top-5 left-0 w-6 h-6 border-t-2 border-l-2 border-green-400"></div>
+                <div class="absolute top-5 right-0 w-6 h-6 border-t-2 border-r-2 border-green-400"></div>
                 <div class="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-green-400"></div>
-                <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-green-400"></div>
-              </div>
+                <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-green-400"></div> -->
+              <!-- </div> -->
               
               <!-- Instruction Text -->
-              <p class="text-white text-center mt-4 text-sm bg-black bg-opacity-50 rounded py-1">
+              <p class="text-white text-center mt-72 text-sm bg-black bg-opacity-50 rounded py-1">
                 Tempatkan QR Code dalam frame
               </p>
             </div>
           </div>
 
           <!-- Camera Placeholder -->
-          <div v-if="!cameraActive" class="w-full h-64 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+          <div v-if="!cameraActive" class="w-full h-24 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
             <div class="text-center">
-              <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-12 h-12 text-gray-400 mx-auto mb-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
@@ -550,7 +550,7 @@ const formatTime = (timestamp: Date) => {
 /* QR Code scanner container */
 #qr-reader {
   width: 100% !important;
-  height: 16rem !important;
+  height: 21rem !important;
 }
 
 #qr-reader__dashboard {
