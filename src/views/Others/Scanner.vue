@@ -5,8 +5,8 @@
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Scan Barcode</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-1">Arahkan kamera ke barcode tiket</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Scan QR Code</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Arahkan kamera ke QR Code tiket</p>
           </div>
           <button
             @click="$router.back()"
@@ -34,24 +34,30 @@
       <!-- Scanner Container -->
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
         <!-- Camera Preview -->
-        <div class="relative">
-          <video
-            ref="videoElement"
-            class="w-full h-64 object-cover bg-black"
-            :class="{ 'hidden': !cameraActive }"
-            playsinline
-          ></video>
+        <div class="relative bg-black">
+          <!-- QR Code Scanner Container -->
+          <div id="qr-reader" class="w-full h-64 relative">
+            <!-- Scanner akan di-render di sini oleh Html5Qrcode -->
+          </div>
           
-          <!-- Scanner Overlay -->
-          <div v-if="cameraActive" class="absolute inset-0 flex items-center justify-center">
-            <div class="border-2 border-green-400 rounded-lg w-64 h-32 relative">
-              <!-- Scanning Animation -->
-              <div class="absolute top-0 left-0 right-0 h-1 bg-green-400 animate-pulse"></div>
-              <!-- Corner Borders -->
-              <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-green-400"></div>
-              <div class="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-green-400"></div>
-              <div class="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-green-400"></div>
-              <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-green-400"></div>
+          <!-- QR Code Scanner Overlay -->
+          <div v-if="cameraActive" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div class="relative">
+              <!-- Square QR Frame -->
+              <div class="border-2 border-green-400 rounded-lg w-64 h-64 relative">
+                <!-- Scanning Animation Line -->
+                <div class="absolute top-0 left-0 right-0 h-1 bg-green-400 animate-pulse scan-line"></div>
+                <!-- Corner Borders -->
+                <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-green-400"></div>
+                <div class="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-green-400"></div>
+                <div class="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-green-400"></div>
+                <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-green-400"></div>
+              </div>
+              
+              <!-- Instruction Text -->
+              <p class="text-white text-center mt-4 text-sm bg-black bg-opacity-50 rounded py-1">
+                Tempatkan QR Code dalam frame
+              </p>
             </div>
           </div>
 
@@ -62,7 +68,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
-              <p class="text-gray-500 dark:text-gray-400">Kamera siap untuk scan</p>
+              <p class="text-gray-500 dark:text-gray-400">Klik Start Camera untuk memulai scan</p>
             </div>
           </div>
         </div>
@@ -85,11 +91,13 @@
             
             <button
               @click="toggleFlash"
+              v-if="hasFlash && cameraActive"
               class="p-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
-              :disabled="!cameraActive || !hasFlash"
+              :disabled="!cameraActive"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                <path v-if="!flashOn" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7zM15 7h5m0 0v5"/>
               </svg>
             </button>
           </div>
@@ -125,12 +133,13 @@
         <div class="space-y-3">
           <div
             v-for="scan in recentScans"
-            :key="scan.ticket_number"
+            :key="scan.ticket_number + scan.timestamp"
             class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
           >
             <div>
               <p class="font-medium text-gray-900 dark:text-white">{{ scan.name }}</p>
               <p class="text-sm text-gray-500 dark:text-gray-400">{{ scan.ticket_number }}</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500">{{ formatTime(scan.timestamp) }}</p>
             </div>
             <span
               class="px-2 py-1 text-xs rounded-full"
@@ -211,6 +220,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { supabase } from '../../utils/supabase'
+import { Html5Qrcode } from 'html5-qrcode'
 
 interface Ticket {
   id: string
@@ -227,7 +237,6 @@ interface ScanHistory {
 }
 
 // State
-const videoElement = ref<HTMLVideoElement>()
 const cameraActive = ref(false)
 const hasFlash = ref(false)
 const flashOn = ref(false)
@@ -241,31 +250,16 @@ const errorMessage = ref('')
 const lastScannedTicket = ref<Ticket | null>(null)
 const recentScans = ref<ScanHistory[]>([])
 
-// Barcode detector (modern browsers)
-let barcodeDetector: any = null
+// QR Code Scanner
+let html5Qrcode: Html5Qrcode | null = null
 let stream: MediaStream | null = null
-let animationFrameId: number | null = null
 
-// Initialize barcode detector
+// Initialize scanner
 onMounted(async () => {
-  if ('BarcodeDetector' in window) {
-    // @ts-ignore
-    barcodeDetector = new BarcodeDetector({ formats: ['qr_code', 'code_128', 'code_39', 'ean_13'] })
-  } else {
-    console.warn('Barcode Detection API not supported')
-  }
-
   // Load scan history from localStorage
   const savedScans = localStorage.getItem('recentScans')
   if (savedScans) {
     recentScans.value = JSON.parse(savedScans)
-  }
-
-  // Auto-start camera on mobile
-  if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    setTimeout(() => {
-      startCamera()
-    }, 1000)
   }
 })
 
@@ -279,27 +273,41 @@ const startCamera = async () => {
   try {
     loading.value = true
     
-    // Request camera permissions
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'environment',
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
-      },
-      audio: false
-    })
+    // Initialize QR Code Scanner
+    html5Qrcode = new Html5Qrcode("qr-reader")
 
-    if (videoElement.value) {
-      videoElement.value.srcObject = stream
-      await videoElement.value.play()
-      cameraActive.value = true
-      startBarcodeDetection()
+    // Get camera devices
+    const devices = await Html5Qrcode.getCameras()
+    if (devices.length === 0) {
+      throw new Error('Tidak ada kamera yang ditemukan')
     }
 
-    // Check if device has flash/torch
-    const track = stream.getVideoTracks()[0]
-    // @ts-ignore
-    hasFlash.value = track.getCapabilities().torch !== undefined
+    // Prefer rear camera
+    const rearCamera = devices.find(device => 
+      device.label.toLowerCase().includes('back') || 
+      device.label.toLowerCase().includes('rear')
+    )
+    
+    const cameraId = rearCamera ? rearCamera.id : devices[0].id
+
+    // Start scanning
+    await html5Qrcode.start(
+      cameraId,
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0
+      },
+      onScanSuccess,
+      onScanFailure
+    )
+
+    cameraActive.value = true
+
+    // Get stream for flash control (try to access the video element)
+    setTimeout(() => {
+      setupFlashControl()
+    }, 1000)
 
   } catch (error) {
     console.error('Error accessing camera:', error)
@@ -310,10 +318,26 @@ const startCamera = async () => {
   }
 }
 
-const stopCamera = () => {
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId)
-    animationFrameId = null
+const setupFlashControl = () => {
+  const videoElement = document.querySelector('#qr-reader video') as HTMLVideoElement
+  if (videoElement && videoElement.srcObject) {
+    stream = videoElement.srcObject as MediaStream
+    const track = stream.getVideoTracks()[0]
+    const capabilities = track.getCapabilities()
+    // Check for torch capability without using TypeScript problematic properties
+    hasFlash.value = 'torch' in capabilities
+  }
+}
+
+const stopCamera = async () => {
+  if (html5Qrcode && html5Qrcode.isScanning) {
+    try {
+      await html5Qrcode.stop()
+    } catch (error) {
+      console.error('Error stopping camera:', error)
+    }
+    html5Qrcode.clear()
+    html5Qrcode = null
   }
 
   if (stream) {
@@ -323,6 +347,7 @@ const stopCamera = () => {
 
   cameraActive.value = false
   flashOn.value = false
+  hasFlash.value = false
 }
 
 const toggleCamera = () => {
@@ -338,44 +363,42 @@ const toggleFlash = async () => {
 
   const track = stream.getVideoTracks()[0]
   try {
-    // @ts-ignore
+    // Use a more compatible way to toggle flash without TypeScript errors
     await track.applyConstraints({
-      advanced: [{ torch: !flashOn.value }]
+      advanced: [{ torch: !flashOn.value } as any]
     })
     flashOn.value = !flashOn.value
   } catch (error) {
     console.error('Error toggling flash:', error)
+    hasFlash.value = false
   }
 }
 
-// Barcode detection
-const startBarcodeDetection = () => {
-  if (!barcodeDetector || !videoElement.value) return
+// QR Code scan handlers
+const onScanSuccess = async (decodedText: string) => {
+  if (loading.value) return
 
-  const detectBarcode = async () => {
-    if (!barcodeDetector || !videoElement.value || videoElement.value.readyState !== 4) {
-      animationFrameId = requestAnimationFrame(detectBarcode)
-      return
-    }
-
-    try {
-      const barcodes = await barcodeDetector.detect(videoElement.value)
-      
-      if (barcodes.length > 0) {
-        const barcode = barcodes[0]
-        await processScannedCode(barcode.rawValue)
-      }
-    } catch (error) {
-      console.error('Barcode detection error:', error)
-    }
-
-    animationFrameId = requestAnimationFrame(detectBarcode)
+  // Pause scanner temporarily to prevent multiple scans
+  if (html5Qrcode) {
+    html5Qrcode.pause()
   }
 
-  detectBarcode()
+  await processScannedCode(decodedText)
+
+  // Resume scanner after processing
+  setTimeout(() => {
+    if (html5Qrcode && cameraActive.value) {
+      html5Qrcode.resume()
+    }
+  }, 2000)
 }
 
-// Process scanned barcode
+const onScanFailure = (error: string) => {
+  // Silent failure - just keep scanning
+  console.log('QR Scan failed:', error)
+}
+
+// Process scanned QR code
 const processScannedCode = async (code: string) => {
   if (loading.value) return
 
@@ -438,7 +461,7 @@ const processScannedCode = async (code: string) => {
     // Show success modal
     showSuccessModal.value = true
 
-    // Play success sound (optional)
+    // Play success sound
     playBeepSound()
 
   } catch (error: any) {
@@ -495,17 +518,58 @@ const playBeepSound = () => {
     console.log('Audio not supported')
   }
 }
+
+const formatTime = (timestamp: Date) => {
+  return new Date(timestamp).toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 </script>
 
 <style scoped>
 /* Custom animations */
 @keyframes scan-line {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(400%); }
+  0% {
+    transform: translateY(-100%);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400%);
+    opacity: 0;
+  }
 }
 
 .scan-line {
   animation: scan-line 2s ease-in-out infinite;
+}
+
+/* QR Code scanner container */
+#qr-reader {
+  width: 100% !important;
+  height: 16rem !important;
+}
+
+#qr-reader__dashboard {
+  display: none !important;
+}
+
+/* Hide the border and camera selection from html5-qrcode */
+#qr-reader__scan_region {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+#html5-qrcode-button-camera-stop,
+#html5-qrcode-button-camera-start,
+#html5-qrcode-button-camera-permission,
+#html5-qrcode-select-camera {
+  display: none !important;
 }
 
 /* Mobile optimizations */
