@@ -54,6 +54,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/scanner',
+      name: 'Scan Tiket',
+      component: () => import('../views/Others/Scanner.vue'),
+      meta: {
+        title: 'Scan Ticket',
+        requiresAuth: true,
+      },
+    },
+    {
       path: '/participant-datas',
       name: 'Data Peserta',
       component: () => import('../views/Tables/ParticipantDatas.vue'),

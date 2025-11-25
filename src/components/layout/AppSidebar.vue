@@ -278,8 +278,10 @@ const menuGroups: MenuGroup[] = [
         icon: TableIcon,
         subItems: [
           // { name: "Basic Tables", path: "/basic-tables", pro: false },
+          { name: "Scan Ticket", path: "/scanner", pro: false },
           { name: "Data Peserta", path: "/participant-datas", pro: false },
-          { name: "Daftar Event", path: "/event-list", pro: false }
+          { name: "Daftar Event", path: "/event-list", pro: false },
+          { name: "Data Infaq", path: "/donation-datas", pro: false },
         ] as SubItem[],
       },
       // {

@@ -16,12 +16,12 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Manage all event tickets in one place</p>
           </div>
         </div>
-        <div class="mt-4 sm:mt-0 flex items-center space-x-3">
-          <!-- Filter Button -->
-          <div class="flex flex-row">
+        <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row sm:items-center gap-3">
+          <!-- Filter Button & Dropdown -->
+          <div class="relative flex flex-col sm:flex-row">
             <button
               @click="showFilterDropdown = !showFilterDropdown"
-              class="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors duration-200"
+              class="flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors duration-200 w-full sm:w-auto"
             >
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
@@ -33,7 +33,7 @@
             </button>
 
             <!-- Filter Dropdown -->
-            <div v-if="showFilterDropdown" class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+            <div v-if="showFilterDropdown" class="absolute right-0 mt-10 sm:mt-2 w-full sm:w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
               <div class="p-4 space-y-4">
                 <!-- Status Filter -->
                 <div>
@@ -88,7 +88,7 @@
           <button
             @click="exportToExcel"
             :disabled="loading || filteredTickets.length === 0"
-            class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            class="flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 w-full sm:w-auto"
             title="Export to Excel"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,12 +98,12 @@
           </button>
 
           <!-- Search Input -->
-          <div class="relative">
+          <div class="relative w-full sm:w-64">
             <input
               v-model="searchQuery"
               type="text"
               placeholder="Search tickets..."
-              class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 w-full sm:w-64"
+              class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 w-full"
               @input="resetPagination"
             >
             <div class="absolute left-3 top-2.5">
@@ -116,7 +116,7 @@
           <!-- Refresh Button -->
           <button
             @click="refreshTickets"
-            class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 w-full sm:w-auto flex items-center justify-center"
             :disabled="loading"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
