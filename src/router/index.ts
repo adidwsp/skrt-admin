@@ -67,16 +67,16 @@ const router = createRouter({
       name: 'Data Peserta',
       component: () => import('../views/Tables/ParticipantDatas.vue'),
       meta: {
-        title: 'Basic Tables',
+        title: 'Data Peserta',
         requiresAuth: true,
       },
     },
     {
       path: '/donation-datas',
       name: 'Data Infaq',
-      component: () => import('../views/Tables/ParticipantDatas.vue'),
+      component: () => import('../views/Tables/DonationDatas.vue'),
       meta: {
-        title: 'Basic Tables',
+        title: 'Data Infaq',
         requiresAuth: true,
       },
     },
